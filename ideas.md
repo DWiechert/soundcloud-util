@@ -4,6 +4,7 @@ Make this a command line utility that helps in download and syncing files from [
 There will be a few commands that are able to run from this jar:
 - download
 - sync
+- syncCheck
 - syncConfig
 
 ## download
@@ -24,6 +25,21 @@ Specifies the output folder of where the downloaded songs go (defaults to curren
 ## sync
 Syncs all folders specified in the `sync.config` file (that resides in the current directory the jar is ran from) based upon what is in the local folders and what is on SoundCloud. The way syncing will work is by matching song titles on SoundCloud to local file names.
 Example: If an artist `A` has songs titled `X`, `Y`, and `Z` on their page and your sync config is pointing to a folder that has files `X.mp3` and `W.mp3`, then songs `Y` and `Z` will be downloaded to `Y.mp3` and `Z.mp3`.
+
+## syncCheck
+Checks to see which songs from the various folders you have indicated to sync need to be downloaded to be fully synced with SoundCloud. This will use the same logic as the `sync` command, however, this will just print out for which songs you are missing for each folder:
+```
+Local sync folder: <folderA>
+Songs not synced from SoundCloud:
+    songA
+    songB
+    songG
+Local sync folder: <folderB>
+Songs not synced from Soundcloud:
+Local sync folder: <folderC>
+Songs not synced from SoundCloud:
+    songA
+```
 
 ## syncConfig
 Allows users to easily create the sync config by answering questions instead of writing the config by hand. The config will be in a json format similar to the following:
