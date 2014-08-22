@@ -8,9 +8,18 @@ There will be a few commands that are able to run from this jar:
 
 ## download
 Downloads a specific songs or all songs from a particular artist. This command will have a few options of its own:
-- `-u <songUrl>` - Downloads a song (can be present multiple times)
-- `-a <artistUrl>` - Downloads all songs from the specified artist (can be present multiple times)
-- `-o <folder>` - Specifies the output folder of where the downloaded songs go (defaults to current directory)
+- `-u <songUrl>`
+- `-a <artistUrl>`
+- `-o <folder>`
+
+#### -u
+Downloads an indiviatul song (can be present multiple times).
+
+#### -a
+Downloads all songs from the specified artist (can be present multiple times).
+
+#### -o
+Specifies the output folder of where the downloaded songs go (defaults to current directory).
 
 ## sync
 Syncs all folders specified in the `sync.config` file (that resides in the current directory the jar is ran from) based upon what is in the local folders and what is on SoundCloud. The way syncing will work is by matching song titles on SoundCloud to local file names.
