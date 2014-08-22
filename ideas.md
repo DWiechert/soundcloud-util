@@ -23,7 +23,7 @@ Specifies the output folder of where the downloaded songs go (defaults to curren
 
 ## sync
 Syncs all folders specified in the `sync.config` file (that resides in the current directory the jar is ran from) based upon what is in the local folders and what is on SoundCloud. The way syncing will work is by matching song titles on SoundCloud to local file names.
-Example: If an artist 'A' has songs titled 'X', 'Y', and 'Z' on their page and your sync config is pointing to a folder that has files 'X.mp3' and 'W.mp3', songs 'Y' and 'Z' will be downloaded to 'Y.mp3' and 'Z.mp3'.
+Example: If an artist `A` has songs titled `X`, `Y`, and `Z` on their page and your sync config is pointing to a folder that has files `X.mp3` and `W.mp3`, then songs `Y` and `Z` will be downloaded to `Y.mp3` and `Z.mp3`.
 
 ## syncConfig
 Allows users to easily create the sync config by answering questions instead of writing the config by hand. The config will be in a json format similar to the following:
