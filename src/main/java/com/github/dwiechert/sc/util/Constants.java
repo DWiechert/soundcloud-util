@@ -13,6 +13,9 @@ public final class Constants {
 	/** The SoundClound login password. */
 	public static final String SOUNDCLOUD_PASSWORD = "1535irving";
 
-	/** The URL for getting tracks from a SoundCloud song. Must format it with a song id. */
+	/** The URL for getting tracks from a SoundCloud song. Must format it with a song id and client id. */
 	public static final String TRACK_URL = "https://api.soundcloud.com/tracks/%s?client_id=%s";
+
+	/** The URL for getting tracks from a SoundCloud artist. Must format it with an artist id and client id. */
+	public static final String ARTIST_TRACK_URL = "https://api.soundcloud.com/users/%d/tracks?client_id=%s";
 }

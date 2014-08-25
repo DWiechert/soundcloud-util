@@ -12,6 +12,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.github.dwiechert.sc.util.Constants;
@@ -55,52 +56,66 @@ public class DownloadCommand extends Command {
 			System.exit(-1);
 		}
 
+		final String destinationFolder = line.hasOption(FOLDER_SHORT) ? line.getOptionValue(FOLDER_SHORT) : System.getProperty("user.dir");
+
 		System.out.println();
 		if (line.hasOption(SONG_SHORT)) {
 			for (final String song : line.getOptionValues(SONG_SHORT)) {
-				String trackString = null;
-				try {
-					final long trackId = api.resolve(song);
-					final HttpResponse trackResponse = api.get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
-					trackString = EntityUtils.toString(trackResponse.getEntity());
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-
-				final JSONObject obj = new JSONObject(trackString);
-				final boolean streamable = obj.getBoolean("streamable");
-
-				if (streamable) {
-					try {
-						final String streamurl = obj.getString("stream_url");
-						final String title = obj.getString("title");
-
-						final URL url = new URL(streamurl + "?client_id=" + Constants.CLIENT_ID);
-						final File mp3 = new File(title + ".mp3");
-						System.out.println("Starting to download track " + title);
-						IOUtils.copyLarge(url.openStream(), new FileOutputStream(mp3));
-						System.out.println("Finished downloading track " + title);
-					} catch (final Exception e) {
-						e.printStackTrace();
-					}
-				} else {
-					System.out.println("Track is not streamable, no way to download song from URL " + song);
-				}
+				downloadSong(song, destinationFolder);
 			}
 		}
 
 		System.out.println();
 		if (line.hasOption(ARTIST_SHORT)) {
 			for (final String artist : line.getOptionValues(ARTIST_SHORT)) {
-				System.out.print(artist + "\t");
+				String artistString = null;
+				try {
+					final long artistId = api.resolve(artist);
+					final HttpResponse artistResponse = api
+							.get(new Request(String.format(Constants.ARTIST_TRACK_URL, artistId, Constants.CLIENT_ID)));
+					artistString = EntityUtils.toString(artistResponse.getEntity());
+					System.out.println(artistString);
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+
+				final JSONArray array = new JSONArray(artistString);
+				for (int i = 0; i < array.length(); i++) {
+					final JSONObject obj = array.getJSONObject(i);
+					downloadSong(obj.getString("permalink_url"), destinationFolder);
+				}
 			}
 		}
+	}
 
-		System.out.println();
-		if (line.hasOption(FOLDER_SHORT)) {
-			for (final String folder : line.getOptionValues(FOLDER_SHORT)) {
-				System.out.print(folder + "\t");
+	private void downloadSong(final String song, final String destinationFolder) {
+		String trackString = null;
+		try {
+			final long trackId = api.resolve(song);
+			final HttpResponse trackResponse = api.get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
+			trackString = EntityUtils.toString(trackResponse.getEntity());
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
+		final JSONObject obj = new JSONObject(trackString);
+		final boolean streamable = obj.getBoolean("streamable");
+
+		if (streamable) {
+			try {
+				final String streamurl = obj.getString("stream_url");
+				final String title = obj.getString("title");
+
+				final URL url = new URL(streamurl + "?client_id=" + Constants.CLIENT_ID);
+				final File mp3 = new File(destinationFolder + File.separatorChar + title + ".mp3");
+				System.out.println("Starting to download track " + title);
+				IOUtils.copyLarge(url.openStream(), new FileOutputStream(mp3));
+				System.out.println("Finished downloading track " + title);
+			} catch (final Exception e) {
+				e.printStackTrace();
 			}
+		} else {
+			System.out.println("Track is not streamable, no way to download song from URL " + song);
 		}
 	}
 }
