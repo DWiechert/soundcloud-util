@@ -12,8 +12,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
-
-import soundcloud.api.models.Track;
+import org.json.JSONObject;
 
 import com.github.dwiechert.sc.util.Constants;
 import com.soundcloud.api.Request;
@@ -59,16 +58,28 @@ public class DownloadCommand extends Command {
 		System.out.println();
 		if (line.hasOption(SONG_SHORT)) {
 			for (final String song : line.getOptionValues(SONG_SHORT)) {
-				final long trackId = getTrackId(song);
-				final Track track = getTrack(trackId);
+				String trackString = null;
+				try {
+					final long trackId = api.resolve(song);
+					final HttpResponse trackResponse = api.get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
+					trackString = EntityUtils.toString(trackResponse.getEntity());
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
 
-				if (track.isStreamable()) {
+				final JSONObject obj = new JSONObject(trackString);
+				final boolean streamable = obj.getBoolean("streamable");
+
+				if (streamable) {
 					try {
-						final URL url = new URL(track.getStreamUrl() + "?client_id=" + Constants.CLIENT_ID);
-						final File mp3 = new File(track.getTitle() + ".mp3");
-						System.out.println("Starting to download track " + track.getTitle());
+						final String streamurl = obj.getString("stream_url");
+						final String title = obj.getString("title");
+
+						final URL url = new URL(streamurl + "?client_id=" + Constants.CLIENT_ID);
+						final File mp3 = new File(title + ".mp3");
+						System.out.println("Starting to download track " + title);
 						IOUtils.copyLarge(url.openStream(), new FileOutputStream(mp3));
-						System.out.println("Finished downloading track " + track.getTitle());
+						System.out.println("Finished downloading track " + title);
 					} catch (final Exception e) {
 						e.printStackTrace();
 					}
@@ -90,40 +101,6 @@ public class DownloadCommand extends Command {
 			for (final String folder : line.getOptionValues(FOLDER_SHORT)) {
 				System.out.print(folder + "\t");
 			}
-		}
-	}
-
-	/**
-	 * Gets a track id from a SoundCloud url.
-	 * 
-	 * @param url
-	 *            The url of the song.
-	 * @return The track id for the song.
-	 */
-	public Long getTrackId(final String url) {
-		try {
-			final long trackId = api.resolve(url);
-			return trackId;
-		} catch (final Throwable t) {
-			return 0L;
-		}
-	}
-
-	/**
-	 * Gets the track information for the provided track id.
-	 * 
-	 * @param trackId
-	 *            The track id to look up.
-	 * @return The track information.
-	 */
-	public Track getTrack(final Long trackId) {
-		try {
-			final HttpResponse trackResponse = api.get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
-			final String trackString = EntityUtils.toString(trackResponse.getEntity());
-			final Track track = gson.fromJson(trackString, Track.class);
-			return track;
-		} catch (final Throwable t) {
-			return new Track();
 		}
 	}
 }
