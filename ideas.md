@@ -9,17 +9,17 @@ There will be a few commands that are able to run from this jar:
 
 ## download
 Downloads a specific songs or all songs from a particular artist. This command will have a few options of its own:
-- `-u <songUrl>`
+- `-s <songUrl>`
 - `-a <artistUrl>`
-- `-o <folder>`
+- `-f <folder>`
 
-#### -u
-Downloads an indiviatul song (can be present multiple times).
+#### -s
+Downloads an individual song (can be present multiple times).
 
 #### -a
 Downloads all songs from the specified artist (can be present multiple times).
 
-#### -o
+#### -f
 Specifies the output folder of where the downloaded songs go (defaults to current directory).
 
 ## sync
