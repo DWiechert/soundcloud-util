@@ -1,11 +1,11 @@
 package com.github.dwiechert.sc.util.commands;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.management.RuntimeErrorException;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 public class SyncConfig extends Command {
 	private static final String CONFIG_FILE_SHORT = "c";
 	private static final String CONFIG_FILE_LONG = "configFile";
-	private static final String CONFIG_DEFAULT = "sc-sync.config";
+	private static final String CONFIG_DEFAULT = "scsync.config";
 
 	@Override
 	public String getName() {
@@ -53,8 +53,7 @@ public class SyncConfig extends Command {
 
 		final String configFile = line.getOptionValue(CONFIG_FILE_SHORT, CONFIG_DEFAULT);
 
-		final List<FolderConfig> configs = new ArrayList<>();
-		getInput(configs);
+		final List<FolderConfig> configs = getInput();
 		save(configs, configFile);
 	}
 
@@ -68,8 +67,41 @@ public class SyncConfig extends Command {
 		}
 	}
 
-	private void getInput(final List<FolderConfig> configs) {
-		// TODO Auto-generated method stub
+	private List<FolderConfig> getInput() {
+		final List<FolderConfig> configs = new ArrayList<>();
 
+		boolean more = false;
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+		try {
+			do {
+				final FolderConfig config = new FolderConfig();
+
+				System.out.print("Enter the artist url to sync: ");
+				final String artistUrl = reader.readLine();
+				config.setArtistUrl(artistUrl);
+
+				System.out.print("Enter the local folder to sync: ");
+				final String localFolder = reader.readLine();
+				config.setLocalFolder(localFolder);
+
+				System.out.print("Enter the local folder to download to (hit enter for default [" + localFolder + "]: ");
+				final String downloadFolder = reader.readLine();
+				config.setDownloadFolder("".equals(downloadFolder) ? localFolder : downloadFolder);
+
+				System.out.print("Would you like this folder to sync (y/n)?: ");
+				final String syncOn = reader.readLine();
+				config.setSyncOn("y".equalsIgnoreCase(syncOn) || "yes".equalsIgnoreCase(syncOn));
+
+				configs.add(config);
+
+				System.out.print("Would you like to sync any more folders (y/n)?: ");
+				final String moreString = reader.readLine();
+				more = "y".equalsIgnoreCase(moreString) || "yes".equalsIgnoreCase(moreString);
+			} while (more);
+		} catch (final Exception e) {
+			throw new RuntimeException("Error getting user input.", e);
+		}
+
+		return configs;
 	}
 }
