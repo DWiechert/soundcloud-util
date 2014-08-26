@@ -56,7 +56,7 @@ public class DownloadCommand extends Command {
 			System.exit(-1);
 		}
 
-		final String destinationFolder = line.hasOption(FOLDER_SHORT) ? line.getOptionValue(FOLDER_SHORT) : System.getProperty("user.dir");
+		final String destinationFolder = line.getOptionValue(FOLDER_SHORT, System.getProperty("user.dir"));
 
 		System.out.println();
 		if (line.hasOption(SONG_SHORT)) {
