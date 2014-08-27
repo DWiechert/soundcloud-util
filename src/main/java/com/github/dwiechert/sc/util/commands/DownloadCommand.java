@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -47,25 +44,15 @@ public class DownloadCommand extends Command {
 
 	@Override
 	public void run(final String... args) {
-		final CommandLineParser parser = new BasicParser();
-		CommandLine line = null;
-		try {
-			line = parser.parse(getOptions(), args);
-		} catch (final ParseException e) {
-			System.err.println("Error parsing options - " + e);
-			System.exit(-1);
-		}
-
+		final CommandLine line = parseArguments(args);
 		final String destinationFolder = line.getOptionValue(FOLDER_SHORT, System.getProperty("user.dir"));
 
-		System.out.println();
 		if (line.hasOption(SONG_SHORT)) {
 			for (final String song : line.getOptionValues(SONG_SHORT)) {
 				downloadSong(song, destinationFolder);
 			}
 		}
 
-		System.out.println();
 		if (line.hasOption(ARTIST_SHORT)) {
 			for (final String artist : line.getOptionValues(ARTIST_SHORT)) {
 				String artistString = null;

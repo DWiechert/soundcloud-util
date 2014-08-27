@@ -7,22 +7,15 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 
 import com.github.dwiechert.sc.util.models.FolderConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class SyncConfigCommand extends Command {
-	private static final String CONFIG_FILE_SHORT = "c";
-	private static final String CONFIG_FILE_LONG = "configFile";
-	private static final String CONFIG_DEFAULT = "scsync.config";
-
+public class SyncConfigCommand extends AbstractSyncCommand {
 	@Override
 	public String getName() {
 		return "syncConfig";
@@ -35,24 +28,13 @@ public class SyncConfigCommand extends Command {
 
 	@Override
 	public Options getOptions() {
-		final Options options = new Options();
-		options.addOption(CONFIG_FILE_SHORT, CONFIG_FILE_LONG, true, "Path to sync config file.");
-		return options;
+		return super.getOptions();
 	}
 
 	@Override
 	public void run(final String... args) {
-		final CommandLineParser parser = new BasicParser();
-		CommandLine line = null;
-		try {
-			line = parser.parse(getOptions(), args);
-		} catch (final ParseException e) {
-			System.err.println("Error parsing options - " + e);
-			System.exit(-1);
-		}
-
-		final String configFile = line.getOptionValue(CONFIG_FILE_SHORT, CONFIG_DEFAULT);
-
+		final CommandLine line = parseArguments(args);
+		final String configFile = getConfigFile(line);
 		final List<FolderConfig> configs = getInput();
 		save(configs, configFile);
 	}
