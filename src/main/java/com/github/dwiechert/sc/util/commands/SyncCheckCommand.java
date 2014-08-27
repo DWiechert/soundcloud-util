@@ -1,14 +1,16 @@
 package com.github.dwiechert.sc.util.commands;
 
-import java.io.File;
-import java.io.FileReader;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import com.github.dwiechert.sc.util.Constants;
+import com.github.dwiechert.sc.util.models.FolderConfig;
 import com.github.dwiechert.sc.util.models.SyncConfig;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.soundcloud.api.Request;
 
 public class SyncCheckCommand extends AbstractSyncCommand {
 	@Override
@@ -31,14 +33,28 @@ public class SyncCheckCommand extends AbstractSyncCommand {
 		final CommandLine line = parseArguments(args);
 		final String configFile = getConfigFile(line);
 		final SyncConfig config = readConfig(configFile);
-	}
 
-	private SyncConfig readConfig(final String configFile) {
-		final Gson gson = new GsonBuilder().create();
-		try {
-			return gson.fromJson(new FileReader(new File(configFile)), SyncConfig.class);
-		} catch (final Exception e) {
-			throw new RuntimeException("Error reading " + configFile + ".", e);
+		for (final FolderConfig folderConfig : config.getConfigs()) {
+			String artistString = null;
+			String user = null;
+			try {
+				final long artistId = api.resolve(folderConfig.getArtistUrl());
+				final HttpResponse artistResponse = api.get(new Request(String.format(Constants.ARTIST_TRACK_URL, artistId, Constants.CLIENT_ID)));
+				artistString = EntityUtils.toString(artistResponse.getEntity());
+				
+				final HttpResponse userResponse = api.get(new Request(String.format(Constants.ARTIST_URL, artistId, Constants.CLIENT_ID)));
+				user = EntityUtils.toString(userResponse.getEntity());
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+
+			final JSONObject userObj = new JSONObject(user);
+			System.out.println("Songs that need to sync from user: " + userObj.getString("username"));
+			final JSONArray array = new JSONArray(artistString);
+			for (int i = 0; i < array.length(); i++) {
+				final JSONObject obj = array.getJSONObject(i);
+				System.out.println(obj);
+			}
 		}
 	}
 }
