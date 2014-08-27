@@ -74,7 +74,6 @@ public class DownloadCommand extends Command {
 					final HttpResponse artistResponse = api
 							.get(new Request(String.format(Constants.ARTIST_TRACK_URL, artistId, Constants.CLIENT_ID)));
 					artistString = EntityUtils.toString(artistResponse.getEntity());
-					System.out.println(artistString);
 				} catch (final Exception e) {
 					e.printStackTrace();
 				}

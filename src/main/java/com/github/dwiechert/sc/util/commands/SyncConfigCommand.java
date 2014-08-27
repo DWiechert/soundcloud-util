@@ -18,7 +18,7 @@ import com.github.dwiechert.sc.util.models.FolderConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class SyncConfig extends Command {
+public class SyncConfigCommand extends Command {
 	private static final String CONFIG_FILE_SHORT = "c";
 	private static final String CONFIG_FILE_LONG = "configFile";
 	private static final String CONFIG_DEFAULT = "scsync.config";
