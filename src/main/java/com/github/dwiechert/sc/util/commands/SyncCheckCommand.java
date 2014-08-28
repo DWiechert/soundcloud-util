@@ -1,7 +1,12 @@
 package com.github.dwiechert.sc.util.commands;
 
+import java.io.File;
+import java.util.Iterator;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -38,11 +43,11 @@ public class SyncCheckCommand extends AbstractSyncCommand {
 			String artistString = null;
 			String user = null;
 			try {
-				final long artistId = api.resolve(folderConfig.getArtistUrl());
-				final HttpResponse artistResponse = api.get(new Request(String.format(Constants.ARTIST_TRACK_URL, artistId, Constants.CLIENT_ID)));
+				final long artistId = getApi().resolve(folderConfig.getArtistUrl());
+				final HttpResponse artistResponse = getApi().get(new Request(String.format(Constants.ARTIST_TRACK_URL, artistId, Constants.CLIENT_ID)));
 				artistString = EntityUtils.toString(artistResponse.getEntity());
-				
-				final HttpResponse userResponse = api.get(new Request(String.format(Constants.ARTIST_URL, artistId, Constants.CLIENT_ID)));
+
+				final HttpResponse userResponse = getApi().get(new Request(String.format(Constants.ARTIST_URL, artistId, Constants.CLIENT_ID)));
 				user = EntityUtils.toString(userResponse.getEntity());
 			} catch (final Exception e) {
 				e.printStackTrace();
@@ -53,8 +58,42 @@ public class SyncCheckCommand extends AbstractSyncCommand {
 			final JSONArray array = new JSONArray(artistString);
 			for (int i = 0; i < array.length(); i++) {
 				final JSONObject obj = array.getJSONObject(i);
-				System.out.println(obj);
+				checkSong(obj.getString("permalink_url"), folderConfig.getLocalFolder());
 			}
+		}
+	}
+
+	private void checkSong(final String song, final String localFolder) {
+		String trackString = null;
+		try {
+			final long trackId = getApi().resolve(song);
+			final HttpResponse trackResponse = getApi().get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
+			trackString = EntityUtils.toString(trackResponse.getEntity());
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
+		final JSONObject obj = new JSONObject(trackString);
+		final boolean streamable = obj.getBoolean("streamable");
+
+		if (streamable) {
+			final String title = obj.getString("title");
+
+			boolean hasSong = false;
+			final Iterator<File> it = FileUtils.iterateFiles(new File(localFolder), null, true);
+			for (; it.hasNext();) {
+				final File file = it.next();
+				if (title.equalsIgnoreCase(FilenameUtils.getBaseName(file.getAbsolutePath()))) {
+					hasSong = true;
+					break;
+				}
+			}
+
+			if (!hasSong) {
+				System.out.println("\t" + title);
+			}
+		} else {
+			System.out.println("Track is not streamable, no way to sync song from URL " + song);
 		}
 	}
 }

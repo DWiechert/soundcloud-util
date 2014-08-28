@@ -57,8 +57,8 @@ public class DownloadCommand extends Command {
 			for (final String artist : line.getOptionValues(ARTIST_SHORT)) {
 				String artistString = null;
 				try {
-					final long artistId = api.resolve(artist);
-					final HttpResponse artistResponse = api
+					final long artistId = getApi().resolve(artist);
+					final HttpResponse artistResponse = getApi()
 							.get(new Request(String.format(Constants.ARTIST_TRACK_URL, artistId, Constants.CLIENT_ID)));
 					artistString = EntityUtils.toString(artistResponse.getEntity());
 				} catch (final Exception e) {
@@ -77,8 +77,8 @@ public class DownloadCommand extends Command {
 	private void downloadSong(final String song, final String destinationFolder) {
 		String trackString = null;
 		try {
-			final long trackId = api.resolve(song);
-			final HttpResponse trackResponse = api.get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
+			final long trackId = getApi().resolve(song);
+			final HttpResponse trackResponse = getApi().get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
 			trackString = EntityUtils.toString(trackResponse.getEntity());
 		} catch (final Exception e) {
 			e.printStackTrace();
