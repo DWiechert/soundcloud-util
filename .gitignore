@@ -15,3 +15,7 @@ hs_err_pid*
 .settings/
 .project
 bin/
+
+# Testing files/folders
+scsync.config
+tempDownloads/
