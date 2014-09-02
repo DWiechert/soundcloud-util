@@ -4,7 +4,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
 import com.github.dwiechert.download.Downloader;
-import com.github.dwiechert.download.DownloaderFactory;
+import com.github.dwiechert.sc.util.SCUtilFactory;
 
 public class DownloadCommand extends Command {
 	private static final String SONG_SHORT = "s";
@@ -40,14 +40,14 @@ public class DownloadCommand extends Command {
 
 		if (line.hasOption(SONG_SHORT)) {
 			for (final String song : line.getOptionValues(SONG_SHORT)) {
-				final Downloader downloader = DownloaderFactory.getDownloader(song);
+				final Downloader downloader = SCUtilFactory.getDownloader(song);
 				downloader.downloadSong(song, destinationFolder);
 			}
 		}
 
 		if (line.hasOption(ARTIST_SHORT)) {
 			for (final String artist : line.getOptionValues(ARTIST_SHORT)) {
-				final Downloader downloader = DownloaderFactory.getDownloader(artist);
+				final Downloader downloader = SCUtilFactory.getDownloader(artist);
 				downloader.downloadArtist(artist, destinationFolder);
 			}
 		}

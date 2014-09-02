@@ -1,11 +1,12 @@
-package com.github.dwiechert.download;
+package com.github.dwiechert.sc.util;
 
+import com.github.dwiechert.download.Downloader;
 import com.github.dwiechert.download.impls.SCDownloader;
 
-public final class DownloaderFactory {
+public final class SCUtilFactory {
 	private static final SCDownloader SC_DOWNLOADER = new SCDownloader();
 	
-	private DownloaderFactory() {
+	private SCUtilFactory() {
 		
 	}
 
