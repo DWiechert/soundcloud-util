@@ -81,7 +81,7 @@ public class SyncCheckCommand extends AbstractSyncCommand {
 
 			boolean hasSong = false;
 			final Iterator<File> it = FileUtils.iterateFiles(new File(localFolder), null, true);
-			for (; it.hasNext();) {
+			while (it.hasNext()) {
 				final File file = it.next();
 				if (title.equalsIgnoreCase(FilenameUtils.getBaseName(file.getAbsolutePath()))) {
 					hasSong = true;

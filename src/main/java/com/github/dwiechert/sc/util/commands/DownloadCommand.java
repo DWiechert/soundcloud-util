@@ -1,27 +1,18 @@
 package com.github.dwiechert.sc.util.commands;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.net.URL;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import com.github.dwiechert.sc.util.Constants;
-import com.soundcloud.api.Request;
+import com.github.dwiechert.download.Downloader;
+import com.github.dwiechert.download.DownloaderFactory;
 
 public class DownloadCommand extends Command {
 	private static final String SONG_SHORT = "s";
 	private static final String SONG_LONG = "songUrl";
 	private static final String ARTIST_SHORT = "a";
 	private static final String ARTIST_LONG = "artistUrl";
-	private static final String FOLDER_SHORT = "f";
-	private static final String FOLDER_LONG = "folder";
+	private static final String FOLDER_SHORT = "o";
+	private static final String FOLDER_LONG = "outputFolder";
 
 	@Override
 	public String getName() {
@@ -49,59 +40,16 @@ public class DownloadCommand extends Command {
 
 		if (line.hasOption(SONG_SHORT)) {
 			for (final String song : line.getOptionValues(SONG_SHORT)) {
-				downloadSong(song, destinationFolder);
+				final Downloader downloader = DownloaderFactory.getDownloader(song);
+				downloader.downloadSong(song, destinationFolder);
 			}
 		}
 
 		if (line.hasOption(ARTIST_SHORT)) {
 			for (final String artist : line.getOptionValues(ARTIST_SHORT)) {
-				String artistString = null;
-				try {
-					final long artistId = getApi().resolve(artist);
-					final HttpResponse artistResponse = getApi()
-							.get(new Request(String.format(Constants.ARTIST_TRACK_URL, artistId, Constants.CLIENT_ID)));
-					artistString = EntityUtils.toString(artistResponse.getEntity());
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-
-				final JSONArray array = new JSONArray(artistString);
-				for (int i = 0; i < array.length(); i++) {
-					final JSONObject obj = array.getJSONObject(i);
-					downloadSong(obj.getString("permalink_url"), destinationFolder);
-				}
+				final Downloader downloader = DownloaderFactory.getDownloader(artist);
+				downloader.downloadArtist(artist, destinationFolder);
 			}
-		}
-	}
-
-	private void downloadSong(final String song, final String destinationFolder) {
-		String trackString = null;
-		try {
-			final long trackId = getApi().resolve(song);
-			final HttpResponse trackResponse = getApi().get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
-			trackString = EntityUtils.toString(trackResponse.getEntity());
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-
-		final JSONObject obj = new JSONObject(trackString);
-		final boolean streamable = obj.getBoolean("streamable");
-
-		if (streamable) {
-			try {
-				final String streamurl = obj.getString("stream_url");
-				final String title = obj.getString("title");
-
-				final URL url = new URL(streamurl + "?client_id=" + Constants.CLIENT_ID);
-				final File mp3 = new File(destinationFolder + File.separatorChar + title + ".mp3");
-				System.out.println("Starting to download track " + title);
-				IOUtils.copyLarge(url.openStream(), new FileOutputStream(mp3));
-				System.out.println("Finished downloading track " + title);
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("Track is not streamable, no way to download song from URL " + song);
 		}
 	}
 }
