@@ -3,7 +3,7 @@
 
 	<groupId>soundcloud-util</groupId>
 	<artifactId>soundcloud-util</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 	<name>soundcloud-util</name>
 	<url>https://github.com/dwiechert/soundcloud-util</url>
