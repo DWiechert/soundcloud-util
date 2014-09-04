@@ -3,7 +3,7 @@
 
 	<groupId>soundcloud-util</groupId>
 	<artifactId>soundcloud-util</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 	<packaging>jar</packaging>
 	<name>soundcloud-util</name>
 	<url>https://github.com/dwiechert/soundcloud-util</url>
@@ -161,4 +161,12 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>internal.repo</id>
+			<name>Temporary Staging Repository</name>
+			<url>/home/dan/Documents/MavenRepo</url>
+		</repository>
+	</distributionManagement>
 </project>
