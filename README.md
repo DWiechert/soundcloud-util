@@ -15,9 +15,10 @@ This is a command line utility to download and sync songs from SoundCloud to you
 ### download
 Allows the downloading of indiviaul song(s) or all songs by individual artist(s).
 Accepted arguments:
-* `-s` - Song url - can be used multiple times.
-* `-a` - Artist url - can be used multiple times.
+* `-s` - Song url - Song to download. Can be used multiple times.
+* `-a` - Artist url - Artist to download all songs from. Can be used multiple times.
 * `-o` - Output folder - Folder to download songs to. Defaults to current directory.
+
 Example Execution:
 ```
 java -jar soundcloud-util-<version>-jar-with-dependencies.jar download -s <songUrl> -a <artistUrl> -o <outputFolder>
@@ -27,6 +28,7 @@ java -jar soundcloud-util-<version>-jar-with-dependencies.jar download -s <songU
 Asks the user various questions to create the config file used in the `syncCheck` and `sync` commands.
 Accepted arguments:
 * `-c` - Config file - File to save the config to. Default to `scsync.config` in the current directory.
+
 Example Execution:
 ```
 java -jar soundcloud-util-<version>-jar-with-dependencies.jar syncConfig -c <configFile>
@@ -36,6 +38,7 @@ java -jar soundcloud-util-<version>-jar-with-dependencies.jar syncConfig -c <con
 Reads the config file and notifies the user which songs are missing for each artist indicated to sync.
 Accepted arguments:
 * `-c` - Config file - File to save the config to. Default to `scsync.config` in the current directory.
+
 Example Execution:
 ```
 java -jar soundcloud-util-<version>-jar-with-dependencies.jar syncCheck -c <configFile>
@@ -45,6 +48,7 @@ java -jar soundcloud-util-<version>-jar-with-dependencies.jar syncCheck -c <conf
 Reads the config file and downloads each song which is missing for each artist indicated to sync.
 Accepted arguments:
 * `-c` - Config file - File to save the config to. Default to `scsync.config` in the current directory.
+
 Example Execution:
 ```
 java -jar soundcloud-util-<version>-jar-with-dependencies.jar sync -c <configFile>
