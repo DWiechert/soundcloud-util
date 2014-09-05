@@ -19,3 +19,6 @@ bin/
 # Testing files/folders
 scsync.config
 tempDownloads/
+
+# Make sure to include the latest built jar so negate the ignore on this file
+!latest-build/soundcloud-util-*-jar-with-dependencies.jar
