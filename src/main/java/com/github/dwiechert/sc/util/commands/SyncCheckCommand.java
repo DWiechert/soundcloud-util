@@ -31,6 +31,10 @@ public class SyncCheckCommand extends AbstractSyncCommand {
 		final SyncConfig config = readConfig(configFile);
 
 		for (final FolderConfig folderConfig : config.getConfigs()) {
+			if (!folderConfig.isSyncOn()) {
+				System.out.println("Sync is turned off for artist URL " + folderConfig.getArtistUrl() + ". Will not run syncCheck for this artist.");
+				continue;
+			}
 			final SyncChecker checker = SCUtilFactory.getSyncChecker(folderConfig.getArtistUrl());
 			checker.check(folderConfig);
 		}

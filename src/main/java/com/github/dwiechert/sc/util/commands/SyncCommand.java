@@ -8,7 +8,6 @@ import com.github.dwiechert.sc.util.models.SyncConfig;
 import com.github.dwiechert.sync.Syncer;
 
 public class SyncCommand extends AbstractSyncCommand {
-
 	@Override
 	public String getName() {
 		return "sync";
@@ -26,6 +25,10 @@ public class SyncCommand extends AbstractSyncCommand {
 		final SyncConfig config = readConfig(configFile);
 
 		for (final FolderConfig folderConfig : config.getConfigs()) {
+			if (!folderConfig.isSyncOn()) {
+				System.out.println("Sync is turned off for artist URL " + folderConfig.getArtistUrl() + ". Will not run sync for this artist.");
+				continue;
+			}
 			final Syncer syncer = SCUtilFactory.getSyncer(folderConfig.getArtistUrl());
 			syncer.sync(folderConfig);
 		}
