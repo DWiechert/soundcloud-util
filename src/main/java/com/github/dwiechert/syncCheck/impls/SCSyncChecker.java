@@ -59,7 +59,9 @@ public class SCSyncChecker implements SyncChecker {
 		final boolean streamable = obj.getBoolean("streamable");
 
 		if (streamable) {
-			final String title = obj.getString("title");
+			// Replace all illegal characters with 'space hyphen'
+			final String title = obj.getString("title").replace(":", " -").replace("\\", " -").replace("/", " -").replace("*", " -").replace("?", " -")
+					.replace("\"", " -").replace(">", " -").replace("<", " -").replace("|", " -");
 
 			boolean hasSong = false;
 			final Iterator<File> it = FileUtils.iterateFiles(new File(localFolder), null, true);

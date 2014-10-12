@@ -55,7 +55,9 @@ public class SCDownloader implements Downloader {
 		if (streamable) {
 			try {
 				final String streamurl = obj.getString("stream_url");
-				final String title = obj.getString("title");
+				// Replace all illegal characters with 'space hyphen'
+				final String title = obj.getString("title").replace(":", " -").replace("\\", " -").replace("/", " -").replace("*", " -").replace("?", " -")
+						.replace("\"", " -").replace(">", " -").replace("<", " -").replace("|", " -");
 
 				final URL url = new URL(streamurl + "?client_id=" + Constants.CLIENT_ID);
 				final File mp3 = new File(destinationFolder + File.separatorChar + title + ".mp3");
