@@ -10,7 +10,7 @@
 * **[sync](#sync)**
 
 ## Overview
-This is a command line utility to download and sync songs from SoundCloud to your local disk. This utility **requires Java 8 to run**.
+This is a command line utility to download and sync songs from SoundCloud to your local disk. This utility **requires** Java 8 to run.
 
 ### download
 Allows the downloading of indiviaul song(s) or all songs by individual artist(s).
