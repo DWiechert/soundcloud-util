@@ -10,6 +10,7 @@ public class FolderConfig {
 	private String localFolder;
 	private String downloadFolder;
 	private boolean syncOn;
+	private Mp3Metadata mp3Metadata;
 
 	/**
 	 * @return the artistUrl
@@ -71,6 +72,21 @@ public class FolderConfig {
 		this.syncOn = syncOn;
 	}
 
+	/**
+	 * @return the mp3Metadata
+	 */
+	public Mp3Metadata getMp3Metadata() {
+		return mp3Metadata;
+	}
+
+	/**
+	 * @param mp3Metadata
+	 *            the mp3Metadata to set
+	 */
+	public void setMp3Metadata(final Mp3Metadata mp3Metadata) {
+		this.mp3Metadata = mp3Metadata;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -80,12 +96,10 @@ public class FolderConfig {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ (artistUrl == null ? 0 : artistUrl.hashCode());
-		result = prime * result
-				+ (downloadFolder == null ? 0 : downloadFolder.hashCode());
-		result = prime * result
-				+ (localFolder == null ? 0 : localFolder.hashCode());
+		result = prime * result + ((artistUrl == null) ? 0 : artistUrl.hashCode());
+		result = prime * result + ((downloadFolder == null) ? 0 : downloadFolder.hashCode());
+		result = prime * result + ((localFolder == null) ? 0 : localFolder.hashCode());
+		result = prime * result + ((mp3Metadata == null) ? 0 : mp3Metadata.hashCode());
 		result = prime * result + (syncOn ? 1231 : 1237);
 		return result;
 	}
@@ -96,17 +110,17 @@ public class FolderConfig {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(final Object obj) {
+	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
 		if (obj == null) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof FolderConfig)) {
 			return false;
 		}
-		final FolderConfig other = (FolderConfig) obj;
+		FolderConfig other = (FolderConfig) obj;
 		if (artistUrl == null) {
 			if (other.artistUrl != null) {
 				return false;
@@ -128,6 +142,13 @@ public class FolderConfig {
 		} else if (!localFolder.equals(other.localFolder)) {
 			return false;
 		}
+		if (mp3Metadata == null) {
+			if (other.mp3Metadata != null) {
+				return false;
+			}
+		} else if (!mp3Metadata.equals(other.mp3Metadata)) {
+			return false;
+		}
 		if (syncOn != other.syncOn) {
 			return false;
 		}
@@ -141,8 +162,7 @@ public class FolderConfig {
 	 */
 	@Override
 	public String toString() {
-		return "FolderConfig [artistUrl=" + artistUrl + ", localFolder="
-				+ localFolder + ", downloadFolder=" + downloadFolder
-				+ ", syncOn=" + syncOn + "]";
+		return "FolderConfig [artistUrl=" + artistUrl + ", localFolder=" + localFolder + ", downloadFolder=" + downloadFolder + ", syncOn=" + syncOn
+				+ ", mp3Metadata=" + mp3Metadata + "]";
 	}
 }

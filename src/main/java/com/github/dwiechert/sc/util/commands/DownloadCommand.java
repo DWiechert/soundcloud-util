@@ -38,17 +38,18 @@ public class DownloadCommand extends Command {
 		final CommandLine line = parseArguments(args);
 		final String destinationFolder = line.getOptionValue(FOLDER_SHORT, System.getProperty("user.dir"));
 
+		// FIXME: Have some way to add Mp3Metadata for individual songs/artists
 		if (line.hasOption(SONG_SHORT)) {
 			for (final String song : line.getOptionValues(SONG_SHORT)) {
 				final Downloader downloader = SCUtilFactory.getDownloader(song);
-				downloader.downloadSong(song, destinationFolder);
+				downloader.downloadSong(song, destinationFolder, null);
 			}
 		}
 
 		if (line.hasOption(ARTIST_SHORT)) {
 			for (final String artist : line.getOptionValues(ARTIST_SHORT)) {
 				final Downloader downloader = SCUtilFactory.getDownloader(artist);
-				downloader.downloadArtist(artist, destinationFolder);
+				downloader.downloadArtist(artist, destinationFolder, null);
 			}
 		}
 	}

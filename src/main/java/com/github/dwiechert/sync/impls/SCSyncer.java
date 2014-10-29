@@ -22,7 +22,7 @@ import com.soundcloud.api.Request;
 public class SCSyncer implements Syncer {
 	private CloudAPI api = new ApiWrapper(Constants.CLIENT_ID, Constants.CLIENT_SECRET, null, null);
 	private int apiCount = 0;
-	
+
 	@Override
 	public void sync(final FolderConfig folderConfig) {
 		String artistString = null;
@@ -43,12 +43,11 @@ public class SCSyncer implements Syncer {
 		final JSONArray array = new JSONArray(artistString);
 		for (int i = 0; i < array.length(); i++) {
 			final JSONObject obj = array.getJSONObject(i);
-			checkSong(obj.getString("permalink_url"), folderConfig.getLocalFolder(), folderConfig.getDownloadFolder());
+			checkSong(obj.getString("permalink_url"), folderConfig);
 		}
 	}
-	
 
-	private void checkSong(final String song, final String localFolder, final String destinationFolder) {
+	private void checkSong(final String song, final FolderConfig folderConfig) {
 		String trackString = null;
 		try {
 			final long trackId = getApi().resolve(song);
@@ -65,7 +64,7 @@ public class SCSyncer implements Syncer {
 			final String title = obj.getString("title");
 
 			boolean hasSong = false;
-			final Iterator<File> it = FileUtils.iterateFiles(new File(localFolder), null, true);
+			final Iterator<File> it = FileUtils.iterateFiles(new File(folderConfig.getLocalFolder()), null, true);
 			while (it.hasNext()) {
 				final File file = it.next();
 				if (title.equalsIgnoreCase(FilenameUtils.getBaseName(file.getAbsolutePath()))) {
@@ -76,7 +75,7 @@ public class SCSyncer implements Syncer {
 
 			if (!hasSong) {
 				final Downloader downloader = SCUtilFactory.getDownloader(song);
-				downloader.downloadSong(obj.getString("permalink_url"), destinationFolder);
+				downloader.downloadSong(obj.getString("permalink_url"), folderConfig.getDownloadFolder(), folderConfig.getMp3Metadata());
 			}
 		} else {
 			System.out.println("Track is not streamable, no way to sync song from URL " + song);

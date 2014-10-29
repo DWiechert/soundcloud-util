@@ -10,6 +10,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
 
 import com.github.dwiechert.sc.util.models.FolderConfig;
+import com.github.dwiechert.sc.util.models.Mp3Metadata;
 import com.github.dwiechert.sc.util.models.SyncConfig;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -72,6 +73,12 @@ public class SyncConfigCommand extends AbstractSyncCommand {
 				System.out.print("Would you like this folder to sync (y/n)?: ");
 				final String syncOn = reader.readLine();
 				folderConfig.setSyncOn("y".equalsIgnoreCase(syncOn) || "yes".equalsIgnoreCase(syncOn));
+				
+				System.out.print("Would you like to tag these files with mp3 metadata?: ");
+				final String tagOn = reader.readLine();
+				if ("y".equalsIgnoreCase(tagOn) || "yes".equalsIgnoreCase(tagOn)) {
+					folderConfig.setMp3Metadata(getMp3Metadata(reader));
+				}
 
 				config.getConfigs().add(folderConfig);
 
@@ -84,5 +91,48 @@ public class SyncConfigCommand extends AbstractSyncCommand {
 		}
 
 		return config;
+	}
+
+	private Mp3Metadata getMp3Metadata(final BufferedReader reader) throws Exception {
+		final Mp3Metadata metadata = new Mp3Metadata();
+		
+		// FIXME: Prompt with artist name
+		System.out.print("Enter the artist: ");
+		final String artist = reader.readLine();
+		metadata.setArtist(artist);
+		
+		System.out.print("Enter the composer (hit enter for default [" + artist + "]: ");
+		final String composer = reader.readLine();
+		metadata.setComposer("".equals(composer) ? artist : composer);
+		
+		System.out.print("Enter the publisher (hit enter for default [" + artist + "]: ");
+		final String publisher = reader.readLine();
+		metadata.setPublisher("".equals(publisher) ? artist : publisher);
+		
+		System.out.print("Enter the original artist (hit enter for default [" + artist + "]: ");
+		final String originalArtist = reader.readLine();
+		metadata.setOriginalArtist("".equals(originalArtist) ? artist : originalArtist);
+		
+		System.out.print("Enter the album artist (hit enter for default [" + artist + "]: ");
+		final String albumArtist = reader.readLine();
+		metadata.setAlbumArtist("".equals(albumArtist) ? artist : albumArtist);
+		
+		System.out.print("Enter the album: ");
+		final String album = reader.readLine();
+		metadata.setAlbum(album);
+		
+		System.out.print("Enter the genre: ");
+		final String genre = reader.readLine();
+		metadata.setGenre(genre);
+		
+		System.out.println("Enter the copyright: ");
+		final String copyright = reader.readLine();
+		metadata.setCopyright(copyright);
+		
+		System.out.println("Enter the encoder: ");
+		final String encoder = reader.readLine();
+		metadata.setEncoder(encoder);
+		
+		return metadata;
 	}
 }
