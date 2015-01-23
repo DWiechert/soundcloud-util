@@ -41,6 +41,7 @@
 	<modules>
 		<module>soundcloud-util-core</module>
 		<module>soundcloud-util-cli</module>
+		<module>soundcloud-util-gui</module>
 	</modules>
 
 	<properties>
