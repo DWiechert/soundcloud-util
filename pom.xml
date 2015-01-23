@@ -40,7 +40,7 @@
 
 	<modules>
 		<module>soundcloud-util-core</module>
-		<module>soundcloud-util-commands</module>
+		<module>soundcloud-util-cli</module>
 	</modules>
 
 	<properties>
