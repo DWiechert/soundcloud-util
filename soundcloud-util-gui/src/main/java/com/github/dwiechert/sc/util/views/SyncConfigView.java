@@ -1,4 +1,4 @@
-package com.github.dwiechert.sc.util;
+package com.github.dwiechert.sc.util.views;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

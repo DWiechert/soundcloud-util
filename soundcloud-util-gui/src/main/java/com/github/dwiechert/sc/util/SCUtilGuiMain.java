@@ -17,7 +17,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.github.dwiechert.sc.util.views.SyncConfigView;
+import com.github.dwiechert.sc.util.views.SyncDownloadView;
+
 public class SCUtilGuiMain {
+	private static final String SYNC_MAIN_TITLE = "SoundCloud Utility";
+	private static final String SYNC_CONFIG_TITLE = SYNC_MAIN_TITLE + " - SyncConfig";
+	private static final String SYNC_DOWNLOAD_TITLE = SYNC_MAIN_TITLE + " - SyncDownload";
+
 	public SCUtilGuiMain() {
 		// Main frame
 		final JFrame frame = new JFrame();
@@ -54,7 +61,9 @@ public class SCUtilGuiMain {
 			public void mousePressed(final MouseEvent e) {
 				panel.removeAll();
 				panel.updateUI();
+				frame.setTitle(SYNC_CONFIG_TITLE);
 				new SyncConfigView(panel);
+				JOptionPane.showMessageDialog(frame, "SyncConfig is not currently fully implemented.", "Not Finished", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
 		viewMenu.add(syncConfig);
@@ -64,7 +73,9 @@ public class SCUtilGuiMain {
 			public void mousePressed(final MouseEvent e) {
 				panel.removeAll();
 				panel.updateUI();
-				JOptionPane.showMessageDialog(frame, "SyncDownload is currently not implemented.", "Not Implemented", JOptionPane.PLAIN_MESSAGE);
+				frame.setTitle(SYNC_DOWNLOAD_TITLE);
+				new SyncDownloadView(panel);
+				JOptionPane.showMessageDialog(frame, "SyncDownload is not currently fully implemented.", "Not Finished", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
 		viewMenu.add(syncDownload);
@@ -72,7 +83,7 @@ public class SCUtilGuiMain {
 		// Build the parent panel
 		frame.add(panel);
 		frame.setJMenuBar(menuBar);
-		frame.setTitle("SoundCloud Utility");
+		frame.setTitle(SYNC_MAIN_TITLE);
 		frame.setSize(600, 400);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
