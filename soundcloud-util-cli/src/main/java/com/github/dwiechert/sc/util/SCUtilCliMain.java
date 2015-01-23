@@ -5,7 +5,7 @@ import com.github.dwiechert.sc.util.commands.SyncCheckCommand;
 import com.github.dwiechert.sc.util.commands.SyncCommand;
 import com.github.dwiechert.sc.util.commands.SyncConfigCommand;
 
-public class SCUtilMain {
+public class SCUtilCliMain {
 	public static void main(final String[] args) {
 		final CommandRunner runner = new CommandRunner();
 		runner.addCommand(new DownloadCommand());

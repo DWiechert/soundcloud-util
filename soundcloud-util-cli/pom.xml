@@ -34,7 +34,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.github.dwiechert.sc.util.SCUtilMain</mainClass>
+							<mainClass>com.github.dwiechert.sc.util.SCUtilCliMain</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
