@@ -8,28 +8,28 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
-import javax.swing.ListCellRenderer;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.github.dwiechert.sc.util.models.FolderConfig;
 import com.github.dwiechert.sc.util.models.SyncConfig;
 import com.github.dwiechert.sc.util.views.models.FolderConfigRenderer;
 
 public class SyncConfigView {
-	private final JPanel panel;
 	private SyncConfig syncConfig = new SyncConfig();
-	private FolderConfig currentFolderConfig;
+	private FolderConfig currentFolderConfig = new FolderConfig();
 
 	public SyncConfigView(final JPanel panel) {
-		this.panel = panel;
-
 		// Left side will be a list
 		final JPanel left = new JPanel();
 		left.setBorder(BorderFactory.createEtchedBorder());
@@ -38,7 +38,7 @@ public class SyncConfigView {
 		// Right side will be info
 		final JPanel right = new JPanel();
 		right.setBorder(BorderFactory.createEtchedBorder());
-		right.setLayout(new GridLayout(2, 2));
+		right.setLayout(new GridLayout(10, 1));
 
 		// Add split so user can move the parts
 		final JSplitPane pane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right);
@@ -50,7 +50,27 @@ public class SyncConfigView {
 		panel.add(pane, BorderLayout.CENTER);
 
 		// Build the left side list
-		DefaultListModel<FolderConfig> listModel = new DefaultListModel<FolderConfig>();
+		final JList<FolderConfig> list = buildLeftSideList(left);
+
+		// Build the right side info
+		buildRightSideInfo(right, list);
+
+		list.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(final ListSelectionEvent e) {
+				final FolderConfig selected = list.getSelectedValue();
+				if (selected != null) {
+					currentFolderConfig = selected;
+				}
+				right.removeAll();
+				right.updateUI();
+				buildRightSideInfo(right, list);
+			}
+		});
+	}
+
+	private JList<FolderConfig> buildLeftSideList(final JPanel left) {
+		final DefaultListModel<FolderConfig> listModel = new DefaultListModel<FolderConfig>();
 		final JList<FolderConfig> list = new JList<>(listModel);
 		list.setCellRenderer(new FolderConfigRenderer());
 		list.addMouseListener(new MouseAdapter() {
@@ -62,7 +82,6 @@ public class SyncConfigView {
 					add.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mousePressed(final MouseEvent e) {
-							System.out.println("Add was clicked");
 							currentFolderConfig = new FolderConfig();
 							currentFolderConfig.setArtistUrl("Artist URL");
 							syncConfig.getConfigs().add(currentFolderConfig);
@@ -77,7 +96,6 @@ public class SyncConfigView {
 						remove.addMouseListener(new MouseAdapter() {
 							@Override
 							public void mousePressed(final MouseEvent e) {
-								System.out.println(index);
 								syncConfig.getConfigs().remove(index);
 								listModel.remove(index);
 							}
@@ -90,12 +108,90 @@ public class SyncConfigView {
 		});
 		left.add(list, BorderLayout.CENTER);
 
-		// Build the right side info
-		final JButton button1 = new JButton("Button1");
-		right.add(button1);
-		final JLabel label1 = new JLabel("Label1");
-		right.add(label1);
-		final JLabel label2 = new JLabel("Label2");
-		right.add(label2);
+		return list;
+	}
+
+	private void buildRightSideInfo(final JPanel right, final JList<FolderConfig> list) {
+		right.add(new JLabel("Artist URL"));
+		final JTextField artistUrlText = new JTextField();
+		if (currentFolderConfig.getArtistUrl() != null) {
+			artistUrlText.setText(currentFolderConfig.getArtistUrl());
+		}
+		artistUrlText.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				updateArtistUrl();
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				updateArtistUrl();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				updateArtistUrl();
+			}
+
+			private void updateArtistUrl() {
+				currentFolderConfig.setArtistUrl(artistUrlText.getText());
+				list.updateUI();
+			}
+		});
+		right.add(artistUrlText);
+
+		right.add(new JLabel("Local Folder"));
+		final JTextField localFolderText = new JTextField();
+		if (currentFolderConfig.getLocalFolder() != null) {
+			localFolderText.setText(currentFolderConfig.getLocalFolder());
+		}
+		localFolderText.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				updateLocalFolder();
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				updateLocalFolder();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				updateLocalFolder();
+			}
+
+			private void updateLocalFolder() {
+				currentFolderConfig.setLocalFolder(localFolderText.getText());
+			}
+		});
+		right.add(localFolderText);
+
+		right.add(new JLabel("Download Folder"));
+		final JTextField downloadFolderText = new JTextField();
+		if (currentFolderConfig.getDownloadFolder() != null) {
+			downloadFolderText.setText(currentFolderConfig.getDownloadFolder());
+		}
+		downloadFolderText.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				updateDownloadFolder();
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				updateDownloadFolder();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				updateDownloadFolder();
+			}
+
+			private void updateDownloadFolder() {
+				currentFolderConfig.setDownloadFolder(downloadFolderText.getText());
+			}
+		});
+		right.add(downloadFolderText);
 	}
 }
