@@ -5,12 +5,16 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
@@ -21,15 +25,22 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.io.FileUtils;
+
 import com.github.dwiechert.sc.util.models.FolderConfig;
 import com.github.dwiechert.sc.util.models.SyncConfig;
 import com.github.dwiechert.sc.util.views.models.FolderConfigRenderer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class SyncConfigView {
+	private final JPanel panel;
 	private SyncConfig syncConfig = new SyncConfig();
 	private FolderConfig currentFolderConfig = new FolderConfig();
 
 	public SyncConfigView(final JPanel panel) {
+		this.panel = panel;
+
 		// Left side will be a list
 		final JPanel left = new JPanel();
 		left.setBorder(BorderFactory.createEtchedBorder());
@@ -193,5 +204,21 @@ public class SyncConfigView {
 			}
 		});
 		right.add(downloadFolderText);
+	}
+
+	public void save() {
+		final JFileChooser chooser = new JFileChooser(new File("."));
+		chooser.setSelectedFile(new File("scsync.config"));
+		if (JFileChooser.APPROVE_OPTION == chooser.showSaveDialog(panel)) {
+			final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			final String json = gson.toJson(syncConfig);
+			try {
+				FileUtils.write(chooser.getSelectedFile(), json);
+				JOptionPane.showMessageDialog(panel, "SyncConfig was successfully saved to file " + chooser.getSelectedFile(), "Save Success",
+						JOptionPane.PLAIN_MESSAGE);
+			} catch (final IOException e) {
+				JOptionPane.showMessageDialog(panel, e.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
 	}
 }

@@ -24,6 +24,7 @@ public class SCUtilGuiMain {
 	private static final String SYNC_MAIN_TITLE = "SoundCloud Utility";
 	private static final String SYNC_CONFIG_TITLE = SYNC_MAIN_TITLE + " - SyncConfig";
 	private static final String SYNC_DOWNLOAD_TITLE = SYNC_MAIN_TITLE + " - SyncDownload";
+	private Object currentView;
 
 	public SCUtilGuiMain() {
 		// Main frame
@@ -40,6 +41,18 @@ public class SCUtilGuiMain {
 		// File menu
 		final JMenu fileMenu = new JMenu("File");
 		menuBar.add(fileMenu);
+		final JMenuItem save = new JMenuItem("Save");
+		save.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(final MouseEvent e) {
+				if (currentView instanceof SyncConfigView) {
+					((SyncConfigView) currentView).save();
+				} else {
+					JOptionPane.showMessageDialog(frame, "Save is only allowed from the SyncConfig view.", "Save Error", JOptionPane.PLAIN_MESSAGE);
+				}
+			}
+		});
+		fileMenu.add(save);
 		fileMenu.addSeparator();
 		final Action exit = new AbstractAction("Exit") {
 			private static final long serialVersionUID = -2588612763307147743L;
@@ -62,7 +75,7 @@ public class SCUtilGuiMain {
 				panel.removeAll();
 				panel.updateUI();
 				frame.setTitle(SYNC_CONFIG_TITLE);
-				new SyncConfigView(panel);
+				currentView = new SyncConfigView(panel);
 				JOptionPane.showMessageDialog(frame, "SyncConfig is not currently fully implemented.", "Not Finished", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
@@ -74,7 +87,7 @@ public class SCUtilGuiMain {
 				panel.removeAll();
 				panel.updateUI();
 				frame.setTitle(SYNC_DOWNLOAD_TITLE);
-				new SyncDownloadView(panel);
+				currentView = new SyncDownloadView(panel);
 				JOptionPane.showMessageDialog(frame, "SyncDownload is not currently fully implemented.", "Not Finished", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
