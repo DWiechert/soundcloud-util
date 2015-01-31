@@ -32,5 +32,7 @@ public class SyncCommand extends AbstractSyncCommand {
 			final Syncer syncer = SCUtilFactory.getSyncer(folderConfig.getArtistUrl());
 			syncer.sync(folderConfig);
 		}
+		
+		save(config, configFile);
 	}
 }

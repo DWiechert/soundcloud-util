@@ -2,9 +2,11 @@ package com.github.dwiechert.sc.util.commands;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
+import org.apache.commons.io.FileUtils;
 
 import com.github.dwiechert.sc.util.models.SyncConfig;
 import com.google.gson.Gson;
@@ -32,6 +34,17 @@ public abstract class AbstractSyncCommand extends Command {
 			return gson.fromJson(new FileReader(new File(configFile)), SyncConfig.class);
 		} catch (final Exception e) {
 			throw new RuntimeException("Error reading " + configFile + ".", e);
+		}
+	}
+
+	protected void save(final SyncConfig config, final String configFile) {
+		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		final String json = gson.toJson(config);
+		try {
+			FileUtils.write(new File(configFile), json);
+			System.out.println("Successfully wrote config to file [" + configFile + "].");
+		} catch (final IOException e) {
+			throw new RuntimeException("Error writing config file.", e);
 		}
 	}
 }

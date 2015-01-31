@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import com.github.dwiechert.sc.util.Constants;
 import com.github.dwiechert.sc.util.models.FolderConfig;
+import com.github.dwiechert.sc.util.models.SongConfig;
 import com.github.dwiechert.syncCheck.SyncChecker;
 import com.soundcloud.api.ApiWrapper;
 import com.soundcloud.api.CloudAPI;
@@ -23,6 +24,7 @@ public class SCSyncChecker implements SyncChecker {
 
 	@Override
 	public void check(final FolderConfig folderConfig) {
+		folderConfig.getSongs().clear();
 		String artistString = null;
 		String user = null;
 		try {
@@ -37,18 +39,24 @@ public class SCSyncChecker implements SyncChecker {
 		}
 
 		final JSONObject userObj = new JSONObject(user);
-		System.out.println("Songs that need to sync from user: " + userObj.getString("username"));
+		final String artist =  userObj.getString("username");
+		folderConfig.setArtist(artist);
+		System.out.println("Songs that need to sync from user: " + artist);
 		final JSONArray array = new JSONArray(artistString);
 		for (int i = 0; i < array.length(); i++) {
 			final JSONObject obj = array.getJSONObject(i);
-			checkSong(obj.getString("permalink_url"), folderConfig.getLocalFolder());
+			checkSong(obj.getString("permalink_url"), folderConfig);
 		}
 	}
 
-	private void checkSong(final String song, final String localFolder) {
+	private void checkSong(final String song, final FolderConfig folderConfig) {
+		final SongConfig songConfig = new SongConfig();
+		songConfig.setSongUrl(song);
+
 		String trackString = null;
 		try {
 			final long trackId = getApi().resolve(song);
+			songConfig.setTrackId(trackId);
 			final HttpResponse trackResponse = getApi().get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
 			trackString = EntityUtils.toString(trackResponse.getEntity());
 		} catch (final Exception e) {
@@ -59,12 +67,15 @@ public class SCSyncChecker implements SyncChecker {
 		final boolean streamable = obj.getBoolean("streamable");
 
 		if (streamable) {
+			// Only add song if streamable
+			folderConfig.getSongs().add(songConfig);
+
 			// Replace all illegal characters with 'space hyphen'
-			final String title = obj.getString("title").replace(":", " -").replace("\\", " -").replace("/", " -").replace("*", " -").replace("?", " -")
-					.replace("\"", " -").replace(">", " -").replace("<", " -").replace("|", " -");
+			final String title = obj.getString("title").replace(":", " -").replace("\\", " -").replace("/", " -").replace("*", " -")
+					.replace("?", " -").replace("\"", " -").replace(">", " -").replace("<", " -").replace("|", " -");
 
 			boolean hasSong = false;
-			final Iterator<File> it = FileUtils.iterateFiles(new File(localFolder), null, true);
+			final Iterator<File> it = FileUtils.iterateFiles(new File(folderConfig.getLocalFolder()), null, true);
 			while (it.hasNext()) {
 				final File file = it.next();
 				if (title.equalsIgnoreCase(FilenameUtils.getBaseName(file.getAbsolutePath()))) {
@@ -75,6 +86,7 @@ public class SCSyncChecker implements SyncChecker {
 
 			if (!hasSong) {
 				System.out.println("\t" + title);
+				songConfig.setSyncOn(true);
 			}
 		} else {
 			System.out.println("Track is not streamable, no way to sync song from URL " + song);

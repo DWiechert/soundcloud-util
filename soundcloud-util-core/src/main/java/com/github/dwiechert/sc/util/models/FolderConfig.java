@@ -1,5 +1,8 @@
 package com.github.dwiechert.sc.util.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class to be stored as json for the folder configuration for syncing.
  *
@@ -7,10 +10,12 @@ package com.github.dwiechert.sc.util.models;
  */
 public class FolderConfig {
 	private String artistUrl;
+	private String artist;
 	private String localFolder;
 	private String downloadFolder;
 	private boolean syncOn;
 	private Mp3Metadata mp3Metadata;
+	private List<SongConfig> songs;
 
 	/**
 	 * @return the artistUrl
@@ -25,6 +30,21 @@ public class FolderConfig {
 	 */
 	public void setArtistUrl(final String artistUrl) {
 		this.artistUrl = artistUrl;
+	}
+
+	/**
+	 * @return the artist
+	 */
+	public String getArtist() {
+		return artist;
+	}
+
+	/**
+	 * @param artist
+	 *            the artist to set
+	 */
+	public void setArtist(final String artist) {
+		this.artist = artist;
 	}
 
 	/**
@@ -87,6 +107,24 @@ public class FolderConfig {
 		this.mp3Metadata = mp3Metadata;
 	}
 
+	/**
+	 * @return the songs
+	 */
+	public List<SongConfig> getSongs() {
+		if (songs == null) {
+			songs = new ArrayList<>();
+		}
+		return songs;
+	}
+
+	/**
+	 * @param songs
+	 *            the songs to set
+	 */
+	public void setSongs(final List<SongConfig> songs) {
+		this.songs = songs;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -96,10 +134,12 @@ public class FolderConfig {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((artistUrl == null) ? 0 : artistUrl.hashCode());
-		result = prime * result + ((downloadFolder == null) ? 0 : downloadFolder.hashCode());
-		result = prime * result + ((localFolder == null) ? 0 : localFolder.hashCode());
-		result = prime * result + ((mp3Metadata == null) ? 0 : mp3Metadata.hashCode());
+		result = prime * result + (artist == null ? 0 : artist.hashCode());
+		result = prime * result + (artistUrl == null ? 0 : artistUrl.hashCode());
+		result = prime * result + (downloadFolder == null ? 0 : downloadFolder.hashCode());
+		result = prime * result + (localFolder == null ? 0 : localFolder.hashCode());
+		result = prime * result + (mp3Metadata == null ? 0 : mp3Metadata.hashCode());
+		result = prime * result + (songs == null ? 0 : songs.hashCode());
 		result = prime * result + (syncOn ? 1231 : 1237);
 		return result;
 	}
@@ -110,7 +150,7 @@ public class FolderConfig {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -120,7 +160,14 @@ public class FolderConfig {
 		if (!(obj instanceof FolderConfig)) {
 			return false;
 		}
-		FolderConfig other = (FolderConfig) obj;
+		final FolderConfig other = (FolderConfig) obj;
+		if (artist == null) {
+			if (other.artist != null) {
+				return false;
+			}
+		} else if (!artist.equals(other.artist)) {
+			return false;
+		}
 		if (artistUrl == null) {
 			if (other.artistUrl != null) {
 				return false;
@@ -149,6 +196,13 @@ public class FolderConfig {
 		} else if (!mp3Metadata.equals(other.mp3Metadata)) {
 			return false;
 		}
+		if (songs == null) {
+			if (other.songs != null) {
+				return false;
+			}
+		} else if (!songs.equals(other.songs)) {
+			return false;
+		}
 		if (syncOn != other.syncOn) {
 			return false;
 		}
@@ -162,7 +216,7 @@ public class FolderConfig {
 	 */
 	@Override
 	public String toString() {
-		return "FolderConfig [artistUrl=" + artistUrl + ", localFolder=" + localFolder + ", downloadFolder=" + downloadFolder + ", syncOn=" + syncOn
-				+ ", mp3Metadata=" + mp3Metadata + "]";
+		return "FolderConfig [artistUrl=" + artistUrl + ", artist=" + artist + ", localFolder=" + localFolder + ", downloadFolder=" + downloadFolder
+				+ ", syncOn=" + syncOn + ", mp3Metadata=" + mp3Metadata + ", songs=" + songs + "]";
 	}
 }

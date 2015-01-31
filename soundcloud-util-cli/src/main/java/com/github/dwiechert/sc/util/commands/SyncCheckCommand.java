@@ -38,5 +38,7 @@ public class SyncCheckCommand extends AbstractSyncCommand {
 			final SyncChecker checker = SCUtilFactory.getSyncChecker(folderConfig.getArtistUrl());
 			checker.check(folderConfig);
 		}
+		
+		save(config, configFile);
 	}
 }

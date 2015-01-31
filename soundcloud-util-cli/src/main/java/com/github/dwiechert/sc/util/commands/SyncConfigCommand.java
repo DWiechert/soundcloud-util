@@ -1,19 +1,14 @@
 package com.github.dwiechert.sc.util.commands;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
-import org.apache.commons.io.FileUtils;
 
 import com.github.dwiechert.sc.util.models.FolderConfig;
 import com.github.dwiechert.sc.util.models.Mp3Metadata;
 import com.github.dwiechert.sc.util.models.SyncConfig;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class SyncConfigCommand extends AbstractSyncCommand {
 	@Override
@@ -37,16 +32,6 @@ public class SyncConfigCommand extends AbstractSyncCommand {
 		final String configFile = getConfigFile(line);
 		final SyncConfig config = getInput();
 		save(config, configFile);
-	}
-
-	private void save(final SyncConfig config, final String configFile) {
-		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		final String json = gson.toJson(config);
-		try {
-			FileUtils.write(new File(configFile), json);
-		} catch (final IOException e) {
-			throw new RuntimeException("Error writing config file.", e);
-		}
 	}
 
 	private SyncConfig getInput() {
