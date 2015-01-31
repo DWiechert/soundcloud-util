@@ -2,6 +2,7 @@ package com.github.dwiechert.download.impls;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
@@ -64,9 +65,8 @@ public class SCDownloader implements Downloader {
 				final URL url = new URL(streamurl + "?client_id=" + Constants.CLIENT_ID);
 				
 				final String endFilename = destinationFolder + File.separatorChar + title + ".mp3";
-				final String downloadFilename = getDownloadFilename(endFilename, metadata != null);
+				final File mp3 = getDownloadFilename(endFilename, metadata != null);
 				
-				final File mp3 = new File(downloadFilename);
 				System.out.println("Starting to download track " + title);
 				IOUtils.copyLarge(url.openStream(), new FileOutputStream(mp3));
 				System.out.println("Finished downloading track " + title);
@@ -76,9 +76,7 @@ public class SCDownloader implements Downloader {
 					final Mp3Metadata newMetadata = new Mp3Metadata(metadata);
 					newMetadata.setTitle(title);
 					newMetadata.setUrl(songUrl);
-					Mp3Tagger.tagMp3(downloadFilename, endFilename, newMetadata);
-					// Clean up the temp file
-					mp3.deleteOnExit();
+					Mp3Tagger.tagMp3(mp3.getAbsolutePath(), endFilename, newMetadata);
 				}
 			} catch (final Exception e) {
 				e.printStackTrace();
@@ -88,13 +86,15 @@ public class SCDownloader implements Downloader {
 		}
 	}
 	
-	private String getDownloadFilename(final String endFilename, final boolean needTemp) {
+	private File getDownloadFilename(final String endFilename, final boolean needTemp) throws IOException {
 		if (!needTemp) {
-			return endFilename;
+			return new File(endFilename);
 		}
 		
 		final String baseName = endFilename.substring(0, endFilename.lastIndexOf(".mp3"));
-		return baseName + "-temp.mp3";
+		final File file = File.createTempFile(baseName + "-temp", ".mp3");
+		file.deleteOnExit();
+		return file;
 	}
 
 	private CloudAPI getApi() {

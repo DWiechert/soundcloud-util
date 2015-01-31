@@ -8,6 +8,7 @@ import com.github.dwiechert.download.Downloader;
 import com.github.dwiechert.sc.util.Constants;
 import com.github.dwiechert.sc.util.SCUtilFactory;
 import com.github.dwiechert.sc.util.models.FolderConfig;
+import com.github.dwiechert.sc.util.models.Mp3Metadata;
 import com.github.dwiechert.sc.util.models.SongConfig;
 import com.github.dwiechert.sync.Syncer;
 import com.soundcloud.api.ApiWrapper;
@@ -41,7 +42,9 @@ public class SCSyncer implements Syncer {
 
 		if (streamable) {
 			final Downloader downloader = SCUtilFactory.getDownloader(song.getSongUrl());
-			downloader.downloadSong(obj.getString("permalink_url"), folderConfig.getDownloadFolder(), folderConfig.getMp3Metadata());
+			// Use the song's mp3 metadata if populated, otherwise use the folder's mp3 metadata
+			final Mp3Metadata metadata = song.getMp3Metadata() != null ? song.getMp3Metadata() : folderConfig.getMp3Metadata();
+			downloader.downloadSong(obj.getString("permalink_url"), folderConfig.getDownloadFolder(), metadata);
 			song.setSyncOn(false);
 		} else {
 			System.out.println("Track is not streamable, no way to sync song from URL " + song.getSongUrl());

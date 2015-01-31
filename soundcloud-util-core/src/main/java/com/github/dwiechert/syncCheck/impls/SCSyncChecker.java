@@ -52,6 +52,8 @@ public class SCSyncChecker implements SyncChecker {
 	private void checkSong(final String song, final FolderConfig folderConfig) {
 		final SongConfig songConfig = new SongConfig();
 		songConfig.setSongUrl(song);
+		// Default a song to the folder mp3 metadata
+		songConfig.setMp3Metadata(folderConfig.getMp3Metadata());
 
 		String trackString = null;
 		try {
