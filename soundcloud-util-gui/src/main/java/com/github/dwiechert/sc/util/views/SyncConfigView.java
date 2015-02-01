@@ -5,16 +5,12 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
@@ -25,22 +21,12 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.commons.io.FileUtils;
-
+import com.github.dwiechert.sc.util.GuiUtils;
 import com.github.dwiechert.sc.util.models.FolderConfig;
-import com.github.dwiechert.sc.util.models.SyncConfig;
 import com.github.dwiechert.sc.util.views.models.FolderConfigRenderer;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class SyncConfigView {
-	private final JPanel panel;
-	private SyncConfig syncConfig = new SyncConfig();
-	private FolderConfig currentFolderConfig = new FolderConfig();
-
 	public SyncConfigView(final JPanel panel) {
-		this.panel = panel;
-
 		// Left side will be a list
 		final JPanel left = new JPanel();
 		left.setBorder(BorderFactory.createEtchedBorder());
@@ -71,7 +57,7 @@ public class SyncConfigView {
 			public void valueChanged(final ListSelectionEvent e) {
 				final FolderConfig selected = list.getSelectedValue();
 				if (selected != null) {
-					currentFolderConfig = selected;
+					GuiUtils.currentFolderConfig = selected;
 				}
 				right.removeAll();
 				right.updateUI();
@@ -83,6 +69,14 @@ public class SyncConfigView {
 	private JList<FolderConfig> buildLeftSideList(final JPanel left) {
 		final DefaultListModel<FolderConfig> listModel = new DefaultListModel<FolderConfig>();
 		final JList<FolderConfig> list = new JList<>(listModel);
+
+		if (!GuiUtils.syncConfig.getConfigs().isEmpty()) {
+			for (final FolderConfig folder : GuiUtils.syncConfig.getConfigs()) {
+				listModel.addElement(folder);
+			}
+			list.setSelectedIndex(0);
+		}
+
 		list.setCellRenderer(new FolderConfigRenderer());
 		list.addMouseListener(new MouseAdapter() {
 			@Override
@@ -93,10 +87,10 @@ public class SyncConfigView {
 					add.addMouseListener(new MouseAdapter() {
 						@Override
 						public void mousePressed(final MouseEvent e) {
-							currentFolderConfig = new FolderConfig();
-							currentFolderConfig.setArtistUrl("Artist URL");
-							syncConfig.getConfigs().add(currentFolderConfig);
-							listModel.addElement(currentFolderConfig);
+							GuiUtils.currentFolderConfig = new FolderConfig();
+							GuiUtils.currentFolderConfig.setArtistUrl("Artist URL");
+							GuiUtils.syncConfig.getConfigs().add(GuiUtils.currentFolderConfig);
+							listModel.addElement(GuiUtils.currentFolderConfig);
 						}
 					});
 					menu.add(add);
@@ -107,7 +101,7 @@ public class SyncConfigView {
 						remove.addMouseListener(new MouseAdapter() {
 							@Override
 							public void mousePressed(final MouseEvent e) {
-								syncConfig.getConfigs().remove(index);
+								GuiUtils.syncConfig.getConfigs().remove(index);
 								listModel.remove(index);
 							}
 						});
@@ -125,8 +119,8 @@ public class SyncConfigView {
 	private void buildRightSideInfo(final JPanel right, final JList<FolderConfig> list) {
 		right.add(new JLabel("Artist URL"));
 		final JTextField artistUrlText = new JTextField();
-		if (currentFolderConfig.getArtistUrl() != null) {
-			artistUrlText.setText(currentFolderConfig.getArtistUrl());
+		if (GuiUtils.currentFolderConfig.getArtistUrl() != null) {
+			artistUrlText.setText(GuiUtils.currentFolderConfig.getArtistUrl());
 		}
 		artistUrlText.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
@@ -145,7 +139,7 @@ public class SyncConfigView {
 			}
 
 			private void updateArtistUrl() {
-				currentFolderConfig.setArtistUrl(artistUrlText.getText());
+				GuiUtils.currentFolderConfig.setArtistUrl(artistUrlText.getText());
 				list.updateUI();
 			}
 		});
@@ -153,8 +147,8 @@ public class SyncConfigView {
 
 		right.add(new JLabel("Local Folder"));
 		final JTextField localFolderText = new JTextField();
-		if (currentFolderConfig.getLocalFolder() != null) {
-			localFolderText.setText(currentFolderConfig.getLocalFolder());
+		if (GuiUtils.currentFolderConfig.getLocalFolder() != null) {
+			localFolderText.setText(GuiUtils.currentFolderConfig.getLocalFolder());
 		}
 		localFolderText.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
@@ -173,15 +167,15 @@ public class SyncConfigView {
 			}
 
 			private void updateLocalFolder() {
-				currentFolderConfig.setLocalFolder(localFolderText.getText());
+				GuiUtils.currentFolderConfig.setLocalFolder(localFolderText.getText());
 			}
 		});
 		right.add(localFolderText);
 
 		right.add(new JLabel("Download Folder"));
 		final JTextField downloadFolderText = new JTextField();
-		if (currentFolderConfig.getDownloadFolder() != null) {
-			downloadFolderText.setText(currentFolderConfig.getDownloadFolder());
+		if (GuiUtils.currentFolderConfig.getDownloadFolder() != null) {
+			downloadFolderText.setText(GuiUtils.currentFolderConfig.getDownloadFolder());
 		}
 		downloadFolderText.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
@@ -200,25 +194,9 @@ public class SyncConfigView {
 			}
 
 			private void updateDownloadFolder() {
-				currentFolderConfig.setDownloadFolder(downloadFolderText.getText());
+				GuiUtils.currentFolderConfig.setDownloadFolder(downloadFolderText.getText());
 			}
 		});
 		right.add(downloadFolderText);
-	}
-
-	public void save() {
-		final JFileChooser chooser = new JFileChooser(new File("."));
-		chooser.setSelectedFile(new File("scsync.config"));
-		if (JFileChooser.APPROVE_OPTION == chooser.showSaveDialog(panel)) {
-			final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			final String json = gson.toJson(syncConfig);
-			try {
-				FileUtils.write(chooser.getSelectedFile(), json);
-				JOptionPane.showMessageDialog(panel, "SyncConfig was successfully saved to file " + chooser.getSelectedFile(), "Save Success",
-						JOptionPane.PLAIN_MESSAGE);
-			} catch (final IOException e) {
-				JOptionPane.showMessageDialog(panel, e.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
-			}
-		}
 	}
 }
