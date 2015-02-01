@@ -38,7 +38,7 @@ public abstract class AbstractSyncCommand extends Command {
 	}
 
 	protected void save(final SyncConfig config, final String configFile) {
-		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		final Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 		final String json = gson.toJson(config);
 		try {
 			FileUtils.write(new File(configFile), json);
