@@ -24,7 +24,7 @@ public class SCSyncChecker implements SyncChecker {
 
 	@Override
 	public void check(final FolderConfig folderConfig) {
-		folderConfig.getSongs().clear();
+		// folderConfig.getSongs().clear();
 		String artistString = null;
 		String user = null;
 		try {
@@ -39,7 +39,7 @@ public class SCSyncChecker implements SyncChecker {
 		}
 
 		final JSONObject userObj = new JSONObject(user);
-		final String artist =  userObj.getString("username");
+		final String artist = userObj.getString("username");
 		folderConfig.setArtist(artist);
 		System.out.println("Songs that need to sync from user: " + artist);
 		final JSONArray array = new JSONArray(artistString);
@@ -50,7 +50,7 @@ public class SCSyncChecker implements SyncChecker {
 	}
 
 	private void checkSong(final String song, final FolderConfig folderConfig) {
-		final SongConfig songConfig = new SongConfig();
+		final SongConfig songConfig = folderConfig.getSongs().stream().filter(s -> s.getSongUrl().equals(song)).findFirst().orElse(new SongConfig());
 		songConfig.setSongUrl(song);
 		// Default a song to the folder mp3 metadata
 		songConfig.setMp3Metadata(folderConfig.getMp3Metadata());
@@ -76,14 +76,16 @@ public class SCSyncChecker implements SyncChecker {
 			final String title = obj.getString("title").replace(":", " -").replace("\\", " -").replace("/", " -").replace("*", " -")
 					.replace("?", " -").replace("\"", " -").replace(">", " -").replace("<", " -").replace("|", " -");
 
-			boolean hasSong = false;
-			final Iterator<File> it = FileUtils.iterateFiles(new File(folderConfig.getLocalFolder()), null, true);
-			while (it.hasNext()) {
-				final File file = it.next();
-				if (title.equalsIgnoreCase(FilenameUtils.getBaseName(file.getAbsolutePath()))) {
-					hasSong = true;
-					songConfig.setLocalSong(file.getName());
-					break;
+			boolean hasSong = songConfig.getLocalSong() != null;
+			if (!hasSong) {
+				final Iterator<File> it = FileUtils.iterateFiles(new File(folderConfig.getLocalFolder()), null, true);
+				while (it.hasNext()) {
+					final File file = it.next();
+					if (title.equalsIgnoreCase(FilenameUtils.getBaseName(file.getAbsolutePath()))) {
+						hasSong = true;
+						songConfig.setLocalSong(file.getName());
+						break;
+					}
 				}
 			}
 
