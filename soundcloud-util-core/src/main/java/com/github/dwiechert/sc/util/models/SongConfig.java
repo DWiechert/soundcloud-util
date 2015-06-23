@@ -4,6 +4,7 @@ public class SongConfig {
 	private String songUrl;
 	private long trackId;
 	private boolean syncOn;
+	private String localSong;
 	private Mp3Metadata mp3Metadata;
 
 	/**
@@ -52,6 +53,21 @@ public class SongConfig {
 	}
 
 	/**
+	 * @return the localSong
+	 */
+	public String getLocalSong() {
+		return localSong;
+	}
+
+	/**
+	 * @param localSong
+	 *            the localSong to set
+	 */
+	public void setLocalSong(final String localSong) {
+		this.localSong = localSong;
+	}
+
+	/**
 	 * @return the mp3Metadata
 	 */
 	public Mp3Metadata getMp3Metadata() {
@@ -75,6 +91,7 @@ public class SongConfig {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (localSong == null ? 0 : localSong.hashCode());
 		result = prime * result + (mp3Metadata == null ? 0 : mp3Metadata.hashCode());
 		result = prime * result + (songUrl == null ? 0 : songUrl.hashCode());
 		result = prime * result + (syncOn ? 1231 : 1237);
@@ -99,6 +116,13 @@ public class SongConfig {
 			return false;
 		}
 		final SongConfig other = (SongConfig) obj;
+		if (localSong == null) {
+			if (other.localSong != null) {
+				return false;
+			}
+		} else if (!localSong.equals(other.localSong)) {
+			return false;
+		}
 		if (mp3Metadata == null) {
 			if (other.mp3Metadata != null) {
 				return false;
@@ -129,6 +153,7 @@ public class SongConfig {
 	 */
 	@Override
 	public String toString() {
-		return "SongConfig [songUrl=" + songUrl + ", trackId=" + trackId + ", syncOn=" + syncOn + ", mp3Metadata=" + mp3Metadata + "]";
+		return "SongConfig [songUrl=" + songUrl + ", trackId=" + trackId + ", syncOn=" + syncOn + ", localSong=" + localSong + ", mp3Metadata="
+				+ mp3Metadata + "]";
 	}
 }
