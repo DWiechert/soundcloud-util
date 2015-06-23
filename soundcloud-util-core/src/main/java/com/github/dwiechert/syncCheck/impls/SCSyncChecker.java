@@ -50,33 +50,37 @@ public class SCSyncChecker implements SyncChecker {
 	}
 
 	private void checkSong(final String song, final FolderConfig folderConfig) {
-		final SongConfig songConfig = folderConfig.getSongs().stream().filter(s -> s.getSongUrl().equals(song)).findFirst().orElse(new SongConfig());
-		songConfig.setSongUrl(song);
-		// Default a song to the folder mp3 metadata
-		songConfig.setMp3Metadata(folderConfig.getMp3Metadata());
-
 		String trackString = null;
+		final long trackId;
 		try {
-			final long trackId = getApi().resolve(song);
-			songConfig.setTrackId(trackId);
+			trackId = getApi().resolve(song);
 			final HttpResponse trackResponse = getApi().get(new Request(String.format(Constants.TRACK_URL, trackId, Constants.CLIENT_ID)));
 			trackString = EntityUtils.toString(trackResponse.getEntity());
 		} catch (final Exception e) {
 			e.printStackTrace();
+			return;
 		}
+
+		final SongConfig songConfig = folderConfig.getSongs().stream().filter(s -> s.getTrackId() == trackId).findFirst().orElse(new SongConfig());
+		songConfig.setTrackId(trackId);
+		songConfig.setSongUrl(song);
+		// Default a song to the folder mp3 metadata
+		songConfig.setMp3Metadata(folderConfig.getMp3Metadata());
 
 		final JSONObject obj = new JSONObject(trackString);
 		final boolean streamable = obj.getBoolean("streamable");
 
 		if (streamable) {
 			// Only add song if streamable
-			folderConfig.getSongs().add(songConfig);
+			if (!folderConfig.getSongs().contains(songConfig)) {
+				folderConfig.getSongs().add(songConfig);
+			}
 
 			// Replace all illegal characters with 'space hyphen'
 			final String title = obj.getString("title").replace(":", " -").replace("\\", " -").replace("/", " -").replace("*", " -")
 					.replace("?", " -").replace("\"", " -").replace(">", " -").replace("<", " -").replace("|", " -");
 
-			boolean hasSong = songConfig.getLocalSong() != null;
+			boolean hasSong = songConfig.getLocalSong() != null ? true : songConfig.isSyncOn();
 			if (!hasSong) {
 				final Iterator<File> it = FileUtils.iterateFiles(new File(folderConfig.getLocalFolder()), null, true);
 				while (it.hasNext()) {
@@ -92,6 +96,8 @@ public class SCSyncChecker implements SyncChecker {
 			if (!hasSong) {
 				System.out.println("\t" + title);
 				songConfig.setSyncOn(true);
+			} else {
+				songConfig.setSyncOn(false);
 			}
 		} else {
 			System.out.println("Track is not streamable, no way to sync song from URL " + song);
