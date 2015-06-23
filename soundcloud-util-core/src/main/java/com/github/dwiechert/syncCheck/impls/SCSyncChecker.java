@@ -82,6 +82,7 @@ public class SCSyncChecker implements SyncChecker {
 				final File file = it.next();
 				if (title.equalsIgnoreCase(FilenameUtils.getBaseName(file.getAbsolutePath()))) {
 					hasSong = true;
+					songConfig.setLocalSong(file.getName());
 					break;
 				}
 			}

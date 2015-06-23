@@ -22,7 +22,7 @@ public class SCSyncer implements Syncer {
 	@Override
 	public void sync(final FolderConfig folderConfig) {
 		for (final SongConfig song : folderConfig.getSongs()) {
-			if (song.isSyncOn()) {
+			if (song.isSyncOn() && song.getLocalSong() == null) {
 				downloadSong(song, folderConfig);
 			}
 		}
