@@ -44,7 +44,7 @@ public class SCSyncer implements Syncer {
 			final Downloader downloader = SCUtilFactory.getDownloader(song.getSongUrl());
 			// Use the song's mp3 metadata if populated, otherwise use the folder's mp3 metadata
 			final Mp3Metadata metadata = song.getMp3Metadata() != null ? song.getMp3Metadata() : folderConfig.getMp3Metadata();
-			downloader.downloadSong(obj.getString("permalink_url"), folderConfig.getDownloadFolder(), metadata);
+			song.setLocalSong(downloader.downloadSong(obj.getString("permalink_url"), folderConfig.getDownloadFolder(), metadata));
 			song.setSyncOn(false);
 		} else {
 			System.out.println("Track is not streamable, no way to sync song from URL " + song.getSongUrl());

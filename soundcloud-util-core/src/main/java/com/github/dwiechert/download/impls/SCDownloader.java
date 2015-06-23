@@ -42,7 +42,7 @@ public class SCDownloader implements Downloader {
 	}
 
 	@Override
-	public void downloadSong(final String songUrl, final String destinationFolder, final Mp3Metadata metadata) {
+	public String downloadSong(final String songUrl, final String destinationFolder, final Mp3Metadata metadata) {
 		String trackString = null;
 		try {
 			final long trackId = getApi().resolve(songUrl);
@@ -78,12 +78,16 @@ public class SCDownloader implements Downloader {
 					newMetadata.setUrl(songUrl);
 					Mp3Tagger.tagMp3(mp3.getAbsolutePath(), endFilename, newMetadata);
 				}
+				
+				return title;
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		} else {
 			System.out.println("Track is not streamable, no way to download song from URL " + songUrl);
 		}
+		
+		return "";
 	}
 	
 	private File getDownloadFilename(final String endFilename, final boolean needTemp) throws IOException {
