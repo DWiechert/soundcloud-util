@@ -1,11 +1,27 @@
 package com.github.dwiechert.sc.util.views.models;
 
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
-public class SyncDownloadTableModel extends AbstractTableModel {
-	Object rowData[][] = { { Boolean.TRUE, "1" }, { Boolean.TRUE, "2" }, { Boolean.FALSE, "3" }, { Boolean.TRUE, "4" }, { Boolean.FALSE, "5" }, };
+import com.github.dwiechert.sc.util.models.FolderConfig;
+import com.github.dwiechert.sc.util.models.SongConfig;
+import com.github.dwiechert.sc.util.models.SyncConfig;
 
+public class SyncDownloadTableModel extends AbstractTableModel {
+	private final Object rowData2[][] = { { Boolean.TRUE, "1" }, { Boolean.TRUE, "2" }, { Boolean.FALSE, "3" }, { Boolean.TRUE, "4" }, { Boolean.FALSE, "5" }, };
+	private final Object rowData[][];
+	
 	String columnNames[] = { "Sync", "Song" };
+	
+	public SyncDownloadTableModel(final SyncConfig config) {
+		rowData = new Object[config.getConfigs().size()][];
+		int index = 0;
+		for (final FolderConfig folderConfig : config.getConfigs()) {
+			rowData[index] = folderConfig.getSongs().toArray();
+			index++;
+		}
+	}
 
 	@Override
 	public int getRowCount() {
