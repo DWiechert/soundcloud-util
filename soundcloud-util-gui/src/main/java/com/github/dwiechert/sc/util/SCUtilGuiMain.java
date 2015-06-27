@@ -133,7 +133,7 @@ public class SCUtilGuiMain {
 	}
 
 	private void save(final JFrame frame) {
-		final JFileChooser chooser = new JFileChooser(new File("."));
+		final JFileChooser chooser = new JFileChooser(new File(GuiUtils.CURRENT_DIRECTORY));
 		chooser.setSelectedFile(new File("scsync.config"));
 		if (JFileChooser.APPROVE_OPTION == chooser.showSaveDialog(frame)) {
 			final Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
@@ -142,6 +142,7 @@ public class SCUtilGuiMain {
 				FileUtils.write(chooser.getSelectedFile(), json);
 				JOptionPane.showMessageDialog(frame, "SyncConfig was successfully saved to file " + chooser.getSelectedFile(), "Save Success",
 						JOptionPane.PLAIN_MESSAGE);
+				GuiUtils.CURRENT_DIRECTORY = chooser.getSelectedFile().getParent();
 			} catch (final IOException e) {
 				JOptionPane.showMessageDialog(frame, e.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
 			}
@@ -149,7 +150,7 @@ public class SCUtilGuiMain {
 	}
 	
 	private void open(final JFrame frame) {
-		final JFileChooser chooser = new JFileChooser(new File("."));
+		final JFileChooser chooser = new JFileChooser(new File(GuiUtils.CURRENT_DIRECTORY));
 		chooser.setSelectedFile(new File("scsync.config"));
 		if (JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(frame)) {
 			final Gson gson = new GsonBuilder().create();
@@ -158,6 +159,7 @@ public class SCUtilGuiMain {
 				if (!GuiUtils.syncConfig.getConfigs().isEmpty()) {
 					GuiUtils.currentFolderConfig = GuiUtils.syncConfig.getConfigs().get(0);
 				}
+				GuiUtils.CURRENT_DIRECTORY = chooser.getSelectedFile().getParent();
 			} catch (final Exception e) {
 				JOptionPane.showMessageDialog(frame, e.getMessage(), "Open Error", JOptionPane.ERROR_MESSAGE);
 			}

@@ -13,7 +13,7 @@ public class FolderConfig {
 	private String artist;
 	private String localFolder;
 	private String downloadFolder;
-	private boolean syncOn;
+	private boolean syncOn = true;
 	private Mp3Metadata mp3Metadata;
 	private List<SongConfig> songs;
 

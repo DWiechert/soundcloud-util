@@ -49,16 +49,23 @@ public class SyncCheckView {
 		button.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(final MouseEvent e) {
-				for (final FolderConfig folderConfig : GuiUtils.syncConfig.getConfigs()) {
-					if (!folderConfig.isSyncOn()) {
-						System.out.println("Sync is turned off for artist URL " + folderConfig.getArtistUrl()
-								+ ". Will not run syncCheck for this artist.");
-						continue;
+				final Thread thread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						for (final FolderConfig folderConfig : GuiUtils.syncConfig.getConfigs()) {
+							if (!folderConfig.isSyncOn()) {
+								System.out.println("Sync is turned off for artist URL " + folderConfig.getArtistUrl()
+										+ ". Will not run syncCheck for this artist.");
+								continue;
+							}
+							final SyncChecker checker = SCUtilFactory.getSyncChecker(folderConfig.getArtistUrl());
+							checker.check(folderConfig);
+						}
+						JOptionPane
+								.showMessageDialog(panel, "Finished SyncCheck, make sure to save.", "SyncCheck Success", JOptionPane.PLAIN_MESSAGE);
 					}
-					final SyncChecker checker = SCUtilFactory.getSyncChecker(folderConfig.getArtistUrl());
-					checker.check(folderConfig);
-				}
-				JOptionPane.showMessageDialog(panel, "Finished SyncCheck, make sure to save.", "SyncCheck Success", JOptionPane.PLAIN_MESSAGE);
+				});
+				thread.start();
 			}
 		});
 		top.add(button);
@@ -70,7 +77,7 @@ public class SyncCheckView {
 		System.setOut(new PrintStream(new JTextAreaOutputStream(text)));
 		bottom.add(scroll);
 	}
-	
+
 	private class JTextAreaOutputStream extends OutputStream {
 		private final JTextArea destination;
 
@@ -89,6 +96,7 @@ public class SyncCheckView {
 				@Override
 				public void run() {
 					destination.append(text);
+					destination.setCaretPosition(destination.getDocument().getLength());
 				}
 			});
 		}
