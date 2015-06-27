@@ -3,7 +3,7 @@ package com.github.dwiechert.sc.util.models;
 public class SongConfig {
 	private String songUrl;
 	private long trackId;
-	private boolean syncOn;
+	private boolean syncOn = true;
 	private String localSong;
 	private Mp3Metadata mp3Metadata;
 

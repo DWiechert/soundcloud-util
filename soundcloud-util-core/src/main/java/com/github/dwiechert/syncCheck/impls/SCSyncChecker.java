@@ -80,20 +80,20 @@ public class SCSyncChecker implements SyncChecker {
 			final String title = obj.getString("title").replace(":", " -").replace("\\", " -").replace("/", " -").replace("*", " -")
 					.replace("?", " -").replace("\"", " -").replace(">", " -").replace("<", " -").replace("|", " -");
 
-			boolean hasSong = songConfig.getLocalSong() != null ? true : songConfig.isSyncOn();
-			if (!hasSong) {
+			boolean needsSong = songConfig.getLocalSong() != null ? false : songConfig.isSyncOn();
+			if (needsSong) {
 				final Iterator<File> it = FileUtils.iterateFiles(new File(folderConfig.getLocalFolder()), null, true);
 				while (it.hasNext()) {
 					final File file = it.next();
 					if (title.equalsIgnoreCase(FilenameUtils.getBaseName(file.getAbsolutePath()))) {
-						hasSong = true;
+						needsSong = false;
 						songConfig.setLocalSong(file.getName());
 						break;
 					}
 				}
 			}
 
-			if (!hasSong) {
+			if (needsSong) {
 				System.out.println("\t" + title);
 				songConfig.setSyncOn(true);
 			} else {
