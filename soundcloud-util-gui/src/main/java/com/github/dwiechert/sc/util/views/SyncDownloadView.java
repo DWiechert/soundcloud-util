@@ -14,13 +14,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 
-import com.github.dwiechert.sc.util.GuiUtils;
 import com.github.dwiechert.sc.util.views.models.SyncDownloadTableModel;
 
 public class SyncDownloadView {
 	public SyncDownloadView(final JPanel panel) {
 		// Build the left side table
-		final SyncDownloadTableModel model = new SyncDownloadTableModel(GuiUtils.syncConfig);
+		final SyncDownloadTableModel model = new SyncDownloadTableModel();
 		final JTable table = new JTable(model);
 		final JScrollPane left = new JScrollPane(table);
 
