@@ -11,6 +11,8 @@ public class DownloadCommand extends Command {
 	private static final String SONG_LONG = "songUrl";
 	private static final String ARTIST_SHORT = "a";
 	private static final String ARTIST_LONG = "artistUrl";
+	private static final String PLAYLIST_SHORT = "p";
+	private static final String PLAYLIST_LONG = "playlistUrl";
 	private static final String FOLDER_SHORT = "o";
 	private static final String FOLDER_LONG = "outputFolder";
 
@@ -29,6 +31,7 @@ public class DownloadCommand extends Command {
 		final Options options = new Options();
 		options.addOption(SONG_SHORT, SONG_LONG, true, "Downloads an individual song.");
 		options.addOption(ARTIST_SHORT, ARTIST_LONG, true, "Downloads all songs from the specified artist.");
+		options.addOption(PLAYLIST_SHORT, PLAYLIST_LONG, true, "Downloads all songs from the specified playlist.");
 		options.addOption(FOLDER_SHORT, FOLDER_LONG, true, "Folder to download the songs to (defaults to current directory).");
 		return options;
 	}
@@ -50,6 +53,13 @@ public class DownloadCommand extends Command {
 			for (final String artist : line.getOptionValues(ARTIST_SHORT)) {
 				final Downloader downloader = SCUtilFactory.getDownloader(artist);
 				downloader.downloadArtist(artist, destinationFolder, null);
+			}
+		}
+		
+		if (line.hasOption(PLAYLIST_SHORT)) {
+			for (final String playlist : line.getOptionValues(PLAYLIST_SHORT)) {
+				final Downloader downloader = SCUtilFactory.getDownloader(playlist);
+				downloader.downloadPlaylist(playlist, destinationFolder, null);
 			}
 		}
 	}

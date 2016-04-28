@@ -24,6 +24,25 @@ public class SCDownloader implements Downloader {
 	private int apiCount = 0;
 
 	@Override
+	public void downloadPlaylist(final String playlistUrl, final String destinationFolder, final Mp3Metadata metadata) {
+		String playlistString = null;
+		try {
+			final long setId = getApi().resolve(playlistUrl);
+			final HttpResponse setResponse = getApi().get(new Request(String.format(Constants.PLAYLIST_URL, setId, Constants.CLIENT_ID)));
+			playlistString = EntityUtils.toString(setResponse.getEntity());
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		
+		final JSONObject obj = new JSONObject(playlistString);
+		final JSONArray array = obj.getJSONArray("tracks");
+		for (int i = 0; i < array.length(); i++) {
+			final JSONObject obj2 = array.getJSONObject(i);
+			downloadSong(obj2.getString("permalink_url"), destinationFolder, metadata);
+		}
+	}
+
+	@Override
 	public void downloadArtist(final String artistUrl, final String destinationFolder, final Mp3Metadata metadata) {
 		String artistString = null;
 		try {

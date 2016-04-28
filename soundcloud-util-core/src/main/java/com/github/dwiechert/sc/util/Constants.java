@@ -15,4 +15,7 @@ public final class Constants {
 
 	/** The URL for getting the user from a SoundCloud id. Must format it with a user id and client id. */
 	public static final String ARTIST_URL = "https://api.soundcloud.com/users/%d?client_id=%s";
+
+	/** The URL for getting a playlist from SoundCloud. Must format it with a playlist id and client id. */
+	public static final String PLAYLIST_URL = "https://api.soundcloud.com/playlists/%d?client_id=%s";
 }
