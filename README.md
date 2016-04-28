@@ -17,11 +17,12 @@ Allows the downloading of indiviaul song(s) or all songs by individual artist(s)
 Accepted arguments:
 * `-s` - Song url - Song to download. Can be used multiple times.
 * `-a` - Artist url - Artist to download all songs from. Can be used multiple times.
+* `-p` - Playlist url - Playlist to download all songs from. Can be used multiple times.
 * `-o` - Output folder - Folder to download songs to. Defaults to current directory.
 
 Example Execution:
 ```
-java -jar soundcloud-util-<version>-jar-with-dependencies.jar download -s <songUrl> -a <artistUrl> -o <outputFolder>
+java -jar soundcloud-util-<version>-jar-with-dependencies.jar download -s <songUrl> -a <artistUrl> -p <playlistUrl> -o <outputFolder>
 ```
 
 ### syncConfig
